@@ -21,7 +21,6 @@ public class InvestmentProduct {
 
     public InvestmentProduct(Long id, String title, Long totalInvestingAmount, String startedAt, String finishedAt) {
         this(id, title, totalInvestingAmount, LocalDateTime.parse(startedAt, DATE_TIME_FORMATTER), LocalDateTime.parse(finishedAt, DATE_TIME_FORMATTER));
-        checkArgument(isValid(), "StartedAt: %s, FinishedAt: %s", startedAt, finishedAt);
     }
 
     public InvestmentProduct(Long id, String title, Long totalInvestingAmount, LocalDateTime startedAt, LocalDateTime finishedAt) {
@@ -30,9 +29,9 @@ public class InvestmentProduct {
         this.totalInvestingAmount = totalInvestingAmount;
         this.startedAt = startedAt;
         this.finishedAt = finishedAt;
-    }
 
-    public boolean isValid() {
-        return startedAt.compareTo(finishedAt) < 0;
+        checkArgument(id > 0L, "ID should be positive [%s]", id);
+        checkArgument(totalInvestingAmount > 0L, "Total Investing Amount should be positive [%s]", totalInvestingAmount);
+        checkArgument(startedAt.compareTo(finishedAt) < 0, "StartedAt: %s, FinishedAt: %s", startedAt, finishedAt);
     }
 }
