@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("투자상품_서비스_테스트")
 @SpringBootTest
 public class InvestmentProductServiceTest {
     private InvestmentProductService investmentProductService;

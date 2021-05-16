@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("투자상품_레퍼지토리_테스트")
 @SpringBootTest
 public class InvestmentProductRepositoryTest {
     private InvestmentProductRepository investmentProductRepository;

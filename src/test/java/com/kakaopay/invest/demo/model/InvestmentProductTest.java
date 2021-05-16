@@ -12,6 +12,7 @@ import java.time.format.DateTimeParseException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+@DisplayName("투자상품_VO_테스트")
 public class InvestmentProductTest {
 
     @DisplayName("정상_생성_테스트")
