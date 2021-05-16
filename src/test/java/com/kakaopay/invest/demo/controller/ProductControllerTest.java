@@ -1,6 +1,5 @@
 package com.kakaopay.invest.demo.controller;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,21 +10,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("투자상품_관련_API_테스트")
+@DisplayName("[Controller]투자상품_관련_API_테스트")
 @SpringBootTest
 @AutoConfigureMockMvc
-class InvestmentProductControllerTest {
+class ProductControllerTest {
     private final MockMvc mockMvc;
 
     @Autowired
-    public InvestmentProductControllerTest(MockMvc mockMvc) {
+    public ProductControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
 

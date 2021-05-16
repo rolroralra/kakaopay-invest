@@ -1,24 +1,22 @@
 package com.kakaopay.invest.demo.model;
 
+import com.kakaopay.invest.demo.util.DateTimeUtil;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-//import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 //@Entity
 //@Table(name = "INVESTMENT_PRODUCT")
 @Data
-@NoArgsConstructor
-public class InvestmentProduct {
-    public static final String DATE_TIME_REGEX_FORMAT = "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])) ((0\\d{1}|1\\d{1}|2[0-3]):([0-5]\\d{1}):([0-5]\\d{1}))";
-    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+public class Product implements Cloneable {
+//    public static final String DATE_TIME_REGEX_FORMAT = "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])) ((0\\d{1}|1\\d{1}|2[0-3]):([0-5]\\d{1}):([0-5]\\d{1}))";
+//    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+//    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
     /*
         ID                      bigint                          NOT NULL AUTO_INCREMENT,
@@ -49,11 +47,15 @@ public class InvestmentProduct {
         PROCEEDING, COMPLETED
     }
 
-    public InvestmentProduct(Long id, String title, Long totalInvestingAmount, String startedAt, String finishedAt) {
-        this(id, title, totalInvestingAmount, LocalDateTime.parse(startedAt, DATE_TIME_FORMATTER), LocalDateTime.parse(finishedAt, DATE_TIME_FORMATTER));
+    public Product(Long id, String title, Long totalInvestingAmount) {
+        this(id, title, totalInvestingAmount, LocalDateTime.now(), LocalDateTime.now().plusDays(7));
     }
 
-    public InvestmentProduct(Long id, String title, Long totalInvestingAmount, LocalDateTime startedAt, LocalDateTime finishedAt) {
+    public Product(Long id, String title, Long totalInvestingAmount, String startedAt, String finishedAt) {
+        this(id, title, totalInvestingAmount, LocalDateTime.parse(startedAt, DateTimeUtil.DATE_TIME_FORMATTER), LocalDateTime.parse(finishedAt, DateTimeUtil.DATE_TIME_FORMATTER));
+    }
+
+    public Product(Long id, String title, Long totalInvestingAmount, LocalDateTime startedAt, LocalDateTime finishedAt) {
         this.id = id;
         this.title = title;
         this.totalInvestingAmount = totalInvestingAmount;
@@ -63,7 +65,7 @@ public class InvestmentProduct {
 
         checkArgument(id > 0L, "ID should be positive [%s]", id);
         checkArgument(totalInvestingAmount > 0L, "Total Investing Amount should be positive [%s]", totalInvestingAmount);
-        checkArgument(startedAt.compareTo(finishedAt) < 0, "StartedAt: %s, FinishedAt: %s", startedAt.format(DATE_TIME_FORMATTER), finishedAt.format(DATE_TIME_FORMATTER));
+        checkArgument(startedAt.compareTo(finishedAt) < 0, "StartedAt: %s, FinishedAt: %s", startedAt.format(DateTimeUtil.DATE_TIME_FORMATTER), finishedAt.format(DateTimeUtil.DATE_TIME_FORMATTER));
     }
 
     public boolean isProceeding() {
@@ -74,5 +76,18 @@ public class InvestmentProduct {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return id.equals(product.id) && title.equals(product.title) && totalInvestingAmount.equals(product.totalInvestingAmount) && startedAt.equals(product.startedAt) && finishedAt.equals(product.finishedAt) && state == product.state;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, totalInvestingAmount, startedAt, finishedAt, state);
     }
 }
