@@ -22,12 +22,13 @@ public class ApiResult<T> {
         return failed(throwable.getMessage());
     }
 
-    private static ApiResult<?> failed(String message) {
+    public static ApiResult<?> failed(String message) {
         return new ApiResult<>(null, message);
     }
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+//        return JsonStringUtil.toPrettyJsonString(ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE));
     }
 }

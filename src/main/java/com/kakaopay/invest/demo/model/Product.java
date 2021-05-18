@@ -25,6 +25,9 @@ public class Product implements Cloneable {
     @Column(name = "TOTAL_AMOUNT")
     private Long totalInvestingAmount;
 
+    @Column(name = "CURRENT_AMOUNT")
+    private Long currentAmount;
+
     @Column(name = "STARTED_AT")
     private LocalDateTime startedAt;
 
@@ -34,6 +37,8 @@ public class Product implements Cloneable {
     @Column(name = "STATE")
     @Enumerated(value = EnumType.STRING)
     private State state;
+
+
 
     public enum State {
         PROCEED, COMPLETED
@@ -55,6 +60,7 @@ public class Product implements Cloneable {
         this.id = id;
         this.title = title;
         this.totalInvestingAmount = totalInvestingAmount;
+        this.currentAmount = 0L;
         this.startedAt = startedAt;
         this.finishedAt = finishedAt;
         this.state = State.PROCEED;
@@ -67,6 +73,10 @@ public class Product implements Cloneable {
     public boolean isProceeding() {
         LocalDateTime now = LocalDateTime.now();
         return now.isAfter(this.startedAt) && now.isBefore(this.finishedAt) && state == State.PROCEED;
+    }
+
+    public Long getPossibleAmount() {
+        return totalInvestingAmount - currentAmount;
     }
 
     @Override

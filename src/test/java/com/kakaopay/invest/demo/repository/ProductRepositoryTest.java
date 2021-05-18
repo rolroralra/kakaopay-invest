@@ -79,7 +79,7 @@ public class ProductRepositoryTest {
     @Test
     public void insert() {
         long oldCount = productRepository.count();
-        Product product = new Product(17L, "Test-17", 24000L, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(3));
+        Product product = new Product(null, "TestProductTitle", 24000L, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(3));
         productRepository.save(product);
         productList = productRepository.findAll();
 
