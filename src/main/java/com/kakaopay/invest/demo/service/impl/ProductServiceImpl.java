@@ -39,17 +39,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void addInvestmentProduct(Product product) {
-        productRepository.add(product);
+        productRepository.save(product);
     }
 
     @Override
     public void updateInvestmentProduct(Product product) {
-        productRepository.modify(product);
+        productRepository.save(product);
 
     }
 
     @Override
     public void deleteInvestmentProduct(Long id) {
-        productRepository.remove(id);
+        productRepository.deleteById(id);
     }
 }

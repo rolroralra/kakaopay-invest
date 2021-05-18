@@ -5,23 +5,29 @@ import com.kakaopay.invest.demo.model.OrderItem;
 import com.kakaopay.invest.demo.model.Product;
 import com.kakaopay.invest.demo.model.User;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@DisplayName("[Repository]투자상품_주문_레퍼지토리_테스트")
+@DisplayName("[Repository]투자_주문_레퍼지토리_테스트")
 @SpringBootTest
 class OrderRepositoryTest {
     private OrderRepository orderRepository;
+    private UserRepository userRepository;
     private ProductRepository productRepository;
+    private OrderItemRepository orderItemRepository;
 
     @Autowired
     public void setOrderRepository(OrderRepository orderRepository) {
@@ -29,13 +35,58 @@ class OrderRepositoryTest {
     }
 
     @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Autowired
     public void setProductRepository(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
+    @Autowired
+    public void setOrderItemRepository(OrderItemRepository orderItemRepository) {
+        this.orderItemRepository = orderItemRepository;
+    }
+
+    @BeforeEach
+    void setUp() {
+        userRepository.save(new User(1L, "root", "root@kakao.com"));
+        userRepository.save(new User(2L, "admin", "admin@kakao.com"));
+        userRepository.save(new User(3L, "rolroralra", "rolroralra@naver.com"));
+        userRepository.save(new User(4L, "guest", "guest@kakao.com"));
+
+        List<User> userList = userRepository.findAll();
+
+        List<Product> productList = LongStream.range(1, 11)
+                .mapToObj(l -> new Product(l, "product" + l, l * 1000, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(l))).collect(Collectors.toList());
+        productList.get(1).setState(Product.State.COMPLETED);
+        productList.get(1).setFinishedAt(LocalDateTime.now().minusDays(1));
+        productList.get(4).setState(Product.State.COMPLETED);
+        productList.get(4).setFinishedAt(LocalDateTime.now().minusDays(1));
+        productList.get(7).setState(Product.State.COMPLETED);
+        productList.get(7).setFinishedAt(LocalDateTime.now().minusDays(1));
+        productRepository.saveAll(productList);
+
+        productList = productRepository.findAll();
+
+
+        orderItemRepository.save(new OrderItem(1L, productList.get(0), 10));
+        orderItemRepository.save(new OrderItem(2L, productList.get(1), 20));
+        orderItemRepository.save(new OrderItem(3L, productList.get(2), 30));
+        orderItemRepository.save(new OrderItem(4L, productList.get(3), 40));
+
+
+        createAndSaveOrder(1L, 1L, 2L);
+        createAndSaveOrder(2L, 3L);
+        createAndSaveOrder(3L, 4L);
+
+        System.out.println(orderRepository.findAll());
+    }
+
     @DisplayName("투자상품_주문_전체_목록_조회_테스트")
     @Test
-    void findAll() {
+    public void findAll() {
         assertThat(orderRepository.findAll())
             .isNotNull()
             .hasSizeGreaterThanOrEqualTo(0)
@@ -44,106 +95,101 @@ class OrderRepositoryTest {
 
     @DisplayName("투자상품_주문_ID_조회_테스트")
     @Test
-    void findById() {
-        orderRepository.add(new Order(1L, new User(1001L, "rolroralra", "rolroralra@gmail.com"), new OrderItem(10001L, new Product(500101L, "KaKao", 5000000L), 3000L)));
-        orderRepository.findById(1L);
+    public void findById() {
+        Long orderId = orderRepository.findAll().stream().mapToLong(Order::getId).findAny().orElse(1L);
+
+        Order order = orderRepository.findById(orderId).orElse(null);
+        System.out.println(order);
+        assertThat(order)
+            .isNotNull()
+            .isInstanceOf(Order.class);
+
+        System.out.println(order.getItems());
+        assertThat(order.getUser())
+                .isNotNull();
+        assertThat(order.getItems())
+                .isNotNull()
+                .hasSizeGreaterThanOrEqualTo(0);
+
     }
 
     @DisplayName("투자상품_주문_INSERT_테스트")
-    @ParameterizedTest
-    @CsvSource(value = {"1001:1001:rolroralra:rolroralra@naver.com:1:1:KaKao:5000000:2000"}, delimiterString = ":")
-    void add(long orderId, long userId, String userName, String userEmail, long orderItemId, long productId, String productTitle, long productAmount, long orderItemAmount) {
-        int beforeSize = orderRepository.findAll().size();
+    @Test
+    public void insert() {
+        User user = userRepository.findAll().stream().findAny().orElse(null);
+        assertThat(user).isNotNull();
 
-        final Order order = addOrder(orderId, userId, userName, userEmail, orderItemId, productId, productTitle, productAmount, orderItemAmount);
+        List<OrderItem> orderItems = orderItemRepository.findAllById(Arrays.asList(1L, 3L));
+        assertThat(orderItems)
+                .isNotNull()
+                .hasSizeGreaterThan(0)
+                .hasOnlyElementsOfType(OrderItem.class);
 
-//        final Order wanted = Order.of(orderId, userId, userName, userEmail, orderItemId, productId, productTitle, productAmount, orderItemAmount);
-        final Order wanted = copyOrder(order);
+        Order order = new Order(user);
+        order.addItem(orderItems);
+        orderRepository.save(order);
+        orderItemRepository.saveAll(orderItems);
 
-        wanted.setStartedAt(order.getStartedAt());
-        wanted.setItems(new ArrayList<>(order.getItems()));
-        wanted.setFinishedAt(order.getFinishedAt());
-
-        assertThat(orderRepository.findById(orderId))
-                .isNotEmpty()
-                .hasValue(wanted);
-
-        addOrder(orderId, userId, userName, userEmail, orderItemId, productId, productTitle, productAmount, orderItemAmount);
-
-        int afterSize = orderRepository.findAll().size();
-
-        assertThat(afterSize).isEqualTo(beforeSize + 1);
+        Order searchResult = orderRepository.findById(order.getId()).orElse(null);
+        assertThat(searchResult)
+                .isNotNull()
+                .isEqualTo(order);
+        assertThat(searchResult.getItems())
+                .isNotNull()
+                .containsAll(order.getItems());
     }
 
     @DisplayName("투자상품_주문_UPDATE_테스트")
-    @ParameterizedTest
-    @CsvSource(value = {"1001:1001:rolroralra:rolroralra@naver.com:1:1:KaKao:5000000:2000"}, delimiterString = ":")
-    void modify(long orderId, long userId, String userName, String userEmail, long orderItemId, long productId, String productTitle, long productAmount, long orderItemAmount) {
-        final Order addedOrder = addOrder(orderId, userId, userName, userEmail, orderItemId, productId, productTitle, productAmount, orderItemAmount);
+    @Test
+    public void update() {
+        Order order = orderRepository.findAll().stream().findAny().orElse(null);
+        assertThat(order).isNotNull();
 
-        Order updatedOrder = orderRepository.findById(orderId).orElse(null);
+        OrderItem orderItem = orderItemRepository.findAll().stream().filter(item -> !order.getItems().contains(item)).findAny().orElse(null);
+        assertThat(orderItem).isNotNull();
 
-        assertThat(updatedOrder)
-                .isNotNull()
-                .isEqualTo(addedOrder);
+        order.addItem(orderItem);
+        order.setFinishedAt(LocalDateTime.now());
+        orderItemRepository.save(orderItem);
+        orderRepository.save(order);
 
-        updatedOrder.complete();
-
-        orderRepository.modify(updatedOrder);
-
-        Order wanted = copyOrder(updatedOrder);
-
-        assertThat(orderRepository.findById(orderId).orElse(null))
-                .isNotNull()
-                .isEqualTo(wanted);
-
+        assertThat(orderRepository.findById(order.getId()))
+                .isNotEmpty()
+                .hasValue(order);
     }
 
     @DisplayName("투자상품_주문_DELETE_테스트")
-    @ParameterizedTest
-    @CsvSource(value = {"1001:1001:rolroralra:rolroralra@naver.com:1:1:KaKao:5000000:2000"}, delimiterString = ":")
-    void remove(long orderId, long userId, String userName, String userEmail, long orderItemId, long productId, String productTitle, long productAmount, long orderItemAmount) {
-        final Order order = addOrder(orderId, userId, userName, userEmail, orderItemId, productId, productTitle, productAmount, orderItemAmount);
+    @Test
+    public void delete() {
+        Order order = orderRepository.findAll().stream().findAny().orElse(null);
+        assertThat(order).isNotNull();
 
-        int beforeSize = orderRepository.findAll().size();
+        orderRepository.deleteById(order.getId());
 
-        orderRepository.remove(orderId);
-
-        int afterSize = orderRepository.findAll().size();
-
-        assertThat(afterSize).isEqualTo(beforeSize - 1);
-        assertThat(orderRepository.findById(orderId)).isEmpty();
-        assertThat(orderRepository.findAll()).doesNotContain(order);
+        assertThat(orderRepository.findById(order.getId()))
+                .isEmpty();
+        assertThat(orderRepository.findAll())
+                .isNotNull()
+                .hasSizeGreaterThanOrEqualTo(0)
+                .hasOnlyElementsOfType(Order.class)
+                .doesNotContain(order);
     }
 
-//    private Product getProductById(long id) {
-//        return productRepository.findById(id)
-//                .orElse(
-//                        new Product(
-//                        1L,
-//                        "Test Prodcut",
-//                        10000L)
-//                );
-//    }
-//
-//    private OrderItem createOrderItem(long orderId, long productId, long amount) {
-//        return new OrderItem(orderId, getProductById(productId), amount);
-//    }
+    private Order createAndSaveOrder(Long userId, Long... orderItemIds) {
+        Order order = new Order();
+        User user = userRepository.findById(userId).orElse(null);
+        assertThat(user).isNotNull();
 
-    private Order addOrder(long orderId, long userId, String userName, String userEmail, long orderItemId, long productId, String productTitle, long productAmount, long orderItemAmount) {
-        final Order order = Order.of(orderId, userId, userName, userEmail, orderItemId, productId, productTitle, productAmount, orderItemAmount);
+        List<OrderItem> orderItems = orderItemRepository.findAllById(Arrays.asList(orderItemIds));
+        order.setUser(user);
+        for (OrderItem orderItem : orderItems) {
+            order.addItem(orderItem);
+        }
 
-        orderRepository.add(order);
+        orderRepository.save(order);
+        orderItemRepository.saveAll(orderItems);
 
         return order;
     }
 
-    private Order copyOrder(Order order) {
-        try {
-            return Order.of(order);
-        } catch (CloneNotSupportedException e) {
-            Assertions.fail(e.getMessage());
-            return null;
-        }
-    }
 }

@@ -43,12 +43,15 @@ public class ProductServiceTest {
                 .hasSizeGreaterThanOrEqualTo(0)
                 .hasOnlyElementsOfType(Product.class)
                 .allMatch(Product::isProceeding);
+
+        System.out.println(productList);
     }
 
     @DisplayName("투자상품_신규등록_테스트")
     @Test
     void addInvestmentProduct() {
-        Product product = new Product(17L, "Test17", 54000L, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(3));
+        long newId = productService.findAll().stream().mapToLong(Product::getId).max().orElse(0) + 1;
+        Product product = new Product(newId, "Test17", 54000L, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(3));
         productService.addInvestmentProduct(product);
 
         Product searchResult = productService.findById(product.getId());
@@ -91,19 +94,20 @@ public class ProductServiceTest {
     @DisplayName("투자상품_삭제_테스트")
     @Test
     void deleteInvestmentProduct() {
-        Product deletedProduct = findAny();
-        assertThat(deletedProduct).isNotNull();
+        Product product = new Product(null, "TestProduct", 10L);
+        productService.addInvestmentProduct(product);
 
-        productService.deleteInvestmentProduct(deletedProduct.getId());
+        productService.deleteInvestmentProduct(product.getId());
 
-        Product searchResult = productService.findById(deletedProduct.getId());
-        assertThat(searchResult).isNull();
+        Product searchResult = productService.findById(product.getId());
+        assertThat(searchResult)
+                .isNull();
 
         assertThat(productService.findAll())
                 .isNotNull()
                 .hasSizeGreaterThanOrEqualTo(0)
                 .hasOnlyElementsOfType(Product.class)
-                .doesNotContain(deletedProduct);
+                .doesNotContain(product);
     }
 
     private Product findAny() {
