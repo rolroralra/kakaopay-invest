@@ -1,19 +1,11 @@
 package com.kakaopay.invest.demo.repository;
 
-import com.kakaopay.invest.demo.model.Order;
 import com.kakaopay.invest.demo.model.OrderItem;
 import com.kakaopay.invest.demo.model.Product;
-import com.kakaopay.invest.demo.model.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,28 +23,6 @@ public class OrderItemRepositoryTest {
     @Autowired
     public void setProductRepository(ProductRepository productRepository) {
         this.productRepository = productRepository;
-    }
-
-    @BeforeEach
-    void setUp() {
-        List<Product> productList = LongStream.range(1, 11)
-                .mapToObj(l -> new Product(l, "product" + l, l * 1000, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(l))).collect(Collectors.toList());
-
-        productList.get(1).setState(Product.State.COMPLETED);
-        productList.get(1).setFinishedAt(LocalDateTime.now().minusDays(1));
-
-        productList.get(4).setState(Product.State.COMPLETED);
-        productList.get(4).setFinishedAt(LocalDateTime.now().minusDays(1));
-
-        productList.get(7).setState(Product.State.COMPLETED);
-        productList.get(7).setFinishedAt(LocalDateTime.now().minusDays(1));
-
-        productRepository.saveAll(productList);
-
-        orderItemRepository.save(new OrderItem(1L, productList.get(0), 10));
-        orderItemRepository.save(new OrderItem(2L, productList.get(1), 20));
-        orderItemRepository.save(new OrderItem(3L, productList.get(2), 30));
-        orderItemRepository.save(new OrderItem(4L, productList.get(3), 40));
     }
 
     @DisplayName("주문상품_전체_목록_조회_테스트")

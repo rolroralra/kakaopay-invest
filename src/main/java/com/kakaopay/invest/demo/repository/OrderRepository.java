@@ -4,7 +4,5 @@ import com.kakaopay.invest.demo.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    default void add(Order order) {
-        save(order);
-    }
+
 }

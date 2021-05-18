@@ -33,7 +33,7 @@ public class OrderItem implements Cloneable {
     private State state;
 
     public enum State {
-        NOT_COMPLETED, SUCCESS, FAILED
+        PROCEED, SUCCESS, FAILED
     }
 
     public OrderItem() {
@@ -45,7 +45,7 @@ public class OrderItem implements Cloneable {
     }
 
     public OrderItem(Long id, Product product, long amount) {
-        this(id, product, amount, State.NOT_COMPLETED);
+        this(id, product, amount, State.PROCEED);
     }
 
     public OrderItem(Long id, Product product, long amount, State state) {

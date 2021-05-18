@@ -17,6 +17,7 @@ CREATE TABLE INVEST_PRODUCT (
                                 STATE varchar(255),
                                 TITLE varchar(255),
                                 TOTAL_AMOUNT bigint,
+                                CURRENT_AMOUNT bigint,
                                 primary key (ID)
 );
 

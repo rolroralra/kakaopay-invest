@@ -4,7 +4,6 @@ import com.kakaopay.invest.demo.model.Order;
 import com.kakaopay.invest.demo.model.OrderItem;
 import com.kakaopay.invest.demo.model.Product;
 import com.kakaopay.invest.demo.model.User;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

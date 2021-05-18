@@ -38,7 +38,7 @@ public class Order implements Cloneable {
     private State state;
 
     public enum State {
-        PROCEED, COMPLETE, CANCELED
+        PROCEED, COMPLETED, CANCELED
     }
 
     public Order() {
@@ -94,7 +94,7 @@ public class Order implements Cloneable {
     }
 
     public void complete() {
-        setState(State.COMPLETE);
+        setState(State.COMPLETED);
         setFinishedAt(LocalDateTime.now());
     }
 
