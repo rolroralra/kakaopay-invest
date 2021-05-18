@@ -24,8 +24,7 @@ public class ProductTest {
     }
 
     @DisplayName("생성시_ID_음수값_예외_테스트")
-    @ValueSource(longs = {-1000, 0, -1})
-
+    @ValueSource(longs = {-1000, -10, -1})
     @ParameterizedTest
     public void 생성시_ID_음수값_예외_테스트(Long id) {
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -35,7 +34,7 @@ public class ProductTest {
     }
 
     @DisplayName("생성시_총_투자_모집금액_음수값_예외_테스트")
-    @ValueSource(longs = {-1000, 0, -1})
+    @ValueSource(longs = {-1000, -10, -1})
     @ParameterizedTest
     public void 생성시_총_투자_모집금액_음수값_예외_테스트(Long totalInvestingAmount) {
         assertThatExceptionOfType(IllegalArgumentException.class)

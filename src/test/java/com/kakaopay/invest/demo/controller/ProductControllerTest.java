@@ -1,5 +1,6 @@
 package com.kakaopay.invest.demo.controller;
 
+import com.kakaopay.invest.demo.model.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,6 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.length()", greaterThanOrEqualTo(0)))
-                .andExpect(jsonPath("$.data[0].state", is("PROCEEDING")));
+                .andExpect(jsonPath("$.data[0].state", is(Product.State.PROCEED.name())));
     }
 }
