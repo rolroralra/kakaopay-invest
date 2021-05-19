@@ -12,10 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -60,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     public List<UserProduct> findUserProductsByUserId(Long userId) {
         Map<Long, UserProduct> map = new HashMap<>();
 
-        List<OrderItem> orderItemList = orderItemRepository.findByUser(userId);
+        List<OrderItem> orderItemList = orderItemRepository.findOrderItemsByUserId(userId);
         for (OrderItem orderItem : orderItemList) {
             Long productId = orderItem.getProduct().getId();
 
@@ -85,13 +82,17 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void add(Product product) {
-        productRepository.save(product);
+        if (Objects.isNull(product.getId()) || productRepository.findById(product.getId()).isEmpty()) {
+            productRepository.save(product);
+        }
     }
 
     @Transactional
     @Override
     public void modify(Product product) {
-        productRepository.save(product);
+        if (productRepository.findById(product.getId()).isPresent()) {
+            productRepository.save(product);
+        }
     }
 
     @Transactional

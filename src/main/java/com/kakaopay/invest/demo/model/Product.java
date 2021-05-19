@@ -1,5 +1,6 @@
 package com.kakaopay.invest.demo.model;
 
+import com.kakaopay.invest.demo.controller.dto.ProductDto;
 import com.kakaopay.invest.demo.util.DateTimeUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +47,10 @@ public class Product implements Cloneable {
         this(null, "", 0L);
     }
 
+    public Product(ProductDto productDto) {
+        this(null, productDto.getTitle(), productDto.getTotalInvestingAmount(), productDto.getStartedAt(), productDto.getFinishedAt());
+    }
+
     public Product(Long id, String title, Long totalInvestingAmount) {
         this(id, title, totalInvestingAmount, LocalDateTime.now(), LocalDateTime.now().plusDays(7));
     }
@@ -65,7 +70,7 @@ public class Product implements Cloneable {
 
         checkArgument(Objects.requireNonNullElse(id, 0L) >= 0L, "ID should be positive [%s]", id);
         checkArgument(totalInvestingAmount >= 0L, "Total Investing Amount should be positive [%s]", totalInvestingAmount);
-        checkArgument(startedAt.compareTo(finishedAt) < 0, "StartedAt: %s, FinishedAt: %s", startedAt.format(DateTimeUtil.DATE_TIME_FORMATTER), finishedAt.format(DateTimeUtil.DATE_TIME_FORMATTER));
+        checkArgument(startedAt.isBefore(finishedAt), "StartedAt: %s, FinishedAt: %s", startedAt.format(DateTimeUtil.DATE_TIME_FORMATTER), finishedAt.format(DateTimeUtil.DATE_TIME_FORMATTER));
     }
 
     public boolean isProceeding() {
@@ -119,6 +124,26 @@ public class Product implements Cloneable {
 
         setState(state);
         return true;
+    }
+
+    public void modify(ProductDto productDto) {
+        if (Objects.nonNull(productDto.getTitle())) {
+            setTitle(productDto.getTitle());
+        }
+
+        if (Objects.nonNull(productDto.getTotalInvestingAmount()) && getTotalInvestingAmount() >= currentAmount) {
+            setTotalInvestingAmount(productDto.getTotalInvestingAmount());
+        }
+
+        if (Objects.nonNull(productDto.getStartedAt()) && productDto.getStartedAt().isBefore(finishedAt)) {
+            setStartedAt(productDto.getStartedAt());
+        }
+
+        if (Objects.nonNull(productDto.getFinishedAt()) && productDto.getFinishedAt().isAfter(startedAt)) {
+            setFinishedAt(productDto.getFinishedAt());
+        }
+
+        refreshState();
     }
 
     @Override

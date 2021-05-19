@@ -29,6 +29,5 @@ public class ApiResult<T> {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-//        return JsonStringUtil.toPrettyJsonString(ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE));
     }
 }

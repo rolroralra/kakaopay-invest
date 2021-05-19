@@ -8,18 +8,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @Getter
 public class UserProduct {
+    private final Long id;
     private final User user;
     private final Product product;
-    String title;
-    Long totalProductInvestAmount;
-    Long totalUserInvestAmount;
-    LocalDateTime finishedAt;
+    private final String title;
+    private final Long totalProductInvestAmount;
+    private Long totalUserInvestAmount;
+    private LocalDateTime finishedAt;
 
     public UserProduct(OrderItem orderItem) {
+        id = orderItem.getProduct().getId();
         user = orderItem.getOrder().getUser();
         product = orderItem.getProduct();
         title = orderItem.getProduct().getTitle();
-        totalUserInvestAmount = orderItem.getProduct().getTotalInvestingAmount();
+        totalProductInvestAmount = orderItem.getProduct().getTotalInvestingAmount();
         totalUserInvestAmount = orderItem.getAmount();
         finishedAt = orderItem.getOrder().getFinishedAt();
     }

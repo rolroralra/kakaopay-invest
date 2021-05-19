@@ -1,5 +1,9 @@
 package com.kakaopay.invest.demo.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kakaopay.invest.demo.controller.dto.ApiResultTest;
 import com.kakaopay.invest.demo.controller.dto.OrderDtoChecker;
 import com.kakaopay.invest.demo.controller.dto.OrderItemDtoChecker;
@@ -16,12 +20,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.hamcrest.Matchers.notNullValue;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("[Controller]투자상품_주문_관련_API_테스트")
 @TestMethodOrder(value = MethodOrderer.DisplayName.class)
@@ -41,9 +44,9 @@ class OrderControllerTest {
     void 테스트01_정상_투자상품_주문_테스트(String userId, String productId, String amount) throws Exception {
         ResultActions result = mockMvc.perform(
                 post("/api/order")
-                        .header("X-USER-ID", userId)
                         .param("productId", productId)
                         .param("amount", amount)
+                        .header("X-USER-ID", userId)
                         .accept(MediaType.APPLICATION_JSON)
         );
 
@@ -153,5 +156,19 @@ class OrderControllerTest {
         );
 
         ApiResultTest.checkFailedResult(result);
+    }
+
+
+    private String toJsonString(Map<String, Object> map) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        String json = null;
+        try {
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return json;
     }
 }
