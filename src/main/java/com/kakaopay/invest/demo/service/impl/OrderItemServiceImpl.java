@@ -6,6 +6,8 @@ import com.kakaopay.invest.demo.repository.OrderItemRepository;
 import com.kakaopay.invest.demo.repository.ProductRepository;
 import com.kakaopay.invest.demo.service.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +44,13 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Transactional(readOnly = true)
     @Override
     public List<OrderItem> findOrderItemsByUserId(Long userId) {
-        return orderItemRepository.findByUser(userId);
+        return orderItemRepository.findOrderItemsByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<OrderItem> findOrderItemsByUserId(Long userId, Pageable pageable) {
+        return orderItemRepository.findOrderItemsByUserId(userId, pageable);
     }
 
 }

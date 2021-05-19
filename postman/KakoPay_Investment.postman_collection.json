@@ -1,0 +1,398 @@
+{
+	"info": {
+		"_postman_id": "82739060-911f-41a7-a117-7b4f9a619b18",
+		"name": "KakoPay_Investment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "투자상품",
+			"item": [
+				{
+					"name": "투자상품_전체목록_조회",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/product",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "finishedAt",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "투자상품_목록_조회(모집중)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/product/proceed",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product",
+								"proceed"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "finishedAt",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "투자상품_목록_조회(모집완료)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/product/completed",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product",
+								"completed"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "finishedAt",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "투자상품_목록_조회(판매완료)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/product/soldout",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product",
+								"soldout"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "finishedAt",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "사용자_개인_투자상품_목록_조회",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-USER-ID",
+								"value": "2",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/product/user",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product",
+								"user"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "finishedAt",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "투자상품_ID_조회",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/product/10",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "투자상품_추가",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"TSMC\",\n    \"totalInvestingAmount\": 20000,\n    \"startedAt\": \"2021-05-20 09:00:00\",\n    \"finishedAt\": \"2021-07-01 09:00:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/product",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "투자상품_수정",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"TSMC\",\n    \"totalInvestingAmount\": 35000,\n    \"startedAt\": \"2021-04-20 09:00:00\",\n    \"finishedAt\": \"2021-07-01 09:00:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/product/10",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "투자상품_삭제",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/product/10",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product",
+								"10"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "투자주문",
+			"item": [
+				{
+					"name": "사용자_투자상품_주문",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-USER-ID",
+								"value": "2",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/order?productId=10&amount=1000",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"order"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "finishedAt",
+									"disabled": true
+								},
+								{
+									"key": "productId",
+									"value": "10"
+								},
+								{
+									"key": "amount",
+									"value": "1000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "사용자_투자_주문상품_목록_조회",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-USER-ID",
+								"value": "2",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/api/order/user?sort=id,DESC",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"order",
+								"user"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "id,DESC"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

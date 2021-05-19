@@ -66,7 +66,7 @@ class OrderRepositoryTest {
             .isNotNull()
             .isInstanceOf(Order.class);
 
-        System.out.println(order.getItems());
+//        System.out.println(order.getItems());
         assertThat(order.getUser())
                 .isNotNull();
         assertThat(order.getItems())

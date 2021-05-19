@@ -58,7 +58,7 @@ public class OrderItemRepositoryTest {
     @ParameterizedTest
     @ValueSource(longs = {1,2,3,4,5,6})
     void 테스트03_정상_사용자_ID_통한_투자상품_주문_목록_조회(Long userId) {
-        assertThat(orderItemRepository.findByUser(userId))
+        assertThat(orderItemRepository.findOrderItemsByUserId(userId))
                 .isNotNull()
                 .hasSizeGreaterThanOrEqualTo(0)
                 .hasOnlyElementsOfType(OrderItem.class);

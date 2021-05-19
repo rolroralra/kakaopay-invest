@@ -2,7 +2,6 @@ package com.kakaopay.invest.demo.controller;
 
 import com.kakaopay.invest.demo.controller.dto.ApiResult;
 import com.kakaopay.invest.demo.controller.dto.ProductDto;
-import com.kakaopay.invest.demo.controller.dto.UserDto;
 import com.kakaopay.invest.demo.controller.dto.UserProductDto;
 import com.kakaopay.invest.demo.model.Product;
 import com.kakaopay.invest.demo.model.User;
@@ -10,14 +9,16 @@ import com.kakaopay.invest.demo.model.UserProduct;
 import com.kakaopay.invest.demo.service.ProductService;
 import com.kakaopay.invest.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.kakaopay.invest.demo.controller.dto.ApiResult.failed;
 import static com.kakaopay.invest.demo.controller.dto.ApiResult.succeed;
 
@@ -34,35 +35,94 @@ public class ProductController {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping(value = "")
     ApiResult<List<ProductDto>> getAllProducts(Pageable pageable) {
         return ApiResult.succeed(
                 productService.findAll(pageable).get().map(ProductDto::new).collect(Collectors.toList())
         );
     }
 
-    @RequestMapping(value = "/proceed", method = { RequestMethod.GET })
+    @GetMapping(value = "/{productId}")
+    ApiResult<ProductDto> getProductById(@PathVariable Long productId) {
+        Product product = productService.findById(productId);
+
+        if (Objects.isNull(product)) {
+            return (ApiResult<ProductDto>) failed(String.format("Product is not exists. [ID=%s]", productId));
+        }
+
+        return ApiResult.succeed(new ProductDto(product));
+    }
+
+    @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ApiResult<ProductDto> addProduct(@RequestBody ProductDto productDto) {
+        checkArgument(Objects.nonNull(productDto));
+
+        Product product = new Product(productDto);
+        productService.add(product);
+
+        product = productService.findById(product.getId());
+
+        if (Objects.isNull(product)) {
+            return (ApiResult<ProductDto>) failed("Failed to add Product");
+        }
+
+        return succeed(new ProductDto(product));
+    }
+
+    @PutMapping(value = "/{productId}")
+    public ApiResult<ProductDto> modifyProduct(@PathVariable Long productId, @RequestBody ProductDto productDto) {
+        checkArgument(Objects.nonNull(productId));
+        checkArgument(Objects.nonNull(productDto));
+
+        Product product = productService.findById(productId);
+
+        if (Objects.isNull(product)) {
+            return (ApiResult<ProductDto>) failed(String.format("Product is not exists. [ID=%s]", productId));
+        }
+
+        product.modify(productDto);
+
+        productService.modify(product);
+
+        return succeed(new ProductDto(product));
+    }
+
+    @DeleteMapping(value = "/{productId}")
+    public ApiResult<ProductDto> removeProduct(@PathVariable Long productId) {
+        Product product = productService.findById(productId);
+
+        if (Objects.isNull(product)) {
+            return (ApiResult<ProductDto>) failed(String.format("Product is not exists. [ID=%s]", productId));
+        }
+
+        productService.remove(productId);
+
+        return succeed(new ProductDto(product));
+    }
+
+
+    @GetMapping(value = "/proceed")
     ApiResult<List<ProductDto>> getProceedingInvestmentProducts() {
-        return ApiResult.succeed(
+        return succeed(
                 productService.findByState(Product.State.PROCEED).stream().map(ProductDto::new).collect(Collectors.toList())
         );
     }
 
-    @RequestMapping(value = "/soldout", method = { RequestMethod.GET })
+    @GetMapping(value = "/soldout")
     ApiResult<List<ProductDto>> getSoldOutProducts() {
-        return ApiResult.succeed(
+        return succeed(
                 productService.findByState(Product.State.SOLD_OUT).stream().map(ProductDto::new).collect(Collectors.toList())
         );
     }
 
-    @RequestMapping(value = "/completed", method = { RequestMethod.GET })
+    @GetMapping(value = "/completed")
     ApiResult<List<ProductDto>> getCompletedProducts() {
-        return ApiResult.succeed(
+        return succeed(
                 productService.findByState(Product.State.COMPLETED).stream().map(ProductDto::new).collect(Collectors.toList())
         );
     }
 
-    @RequestMapping(value = "/user", method = { RequestMethod.GET })
+    @GetMapping(value = "/user")
     public ApiResult<List<UserProductDto>> findUserProductList(@RequestHeader(name = "X-USER-ID") Long userId) {
         User user = userService.findById(userId);
 
@@ -74,11 +134,9 @@ public class ProductController {
             System.out.println(userProduct);
         }
 
-        return ApiResult.succeed(
+        return succeed(
                 productService.findUserProductsByUserId(userId).stream().map(UserProductDto::new).collect(Collectors.toList())
         );
     }
-
-
 
 }

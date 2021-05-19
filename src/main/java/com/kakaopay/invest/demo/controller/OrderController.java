@@ -10,7 +10,9 @@ import com.kakaopay.invest.demo.service.OrderItemService;
 import com.kakaopay.invest.demo.service.OrderService;
 import com.kakaopay.invest.demo.service.ProductService;
 import com.kakaopay.invest.demo.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +24,7 @@ import static com.kakaopay.invest.demo.controller.dto.ApiResult.succeed;
 
 @RestController
 @RequestMapping(value = "/api/order")
+@Slf4j
 public class OrderController {
     private final OrderService orderService;
     private final UserService userService;
@@ -49,6 +52,10 @@ public class OrderController {
             return (ApiResult<OrderDto>) failed(String.format("Product is not exists. [ID=%s]", productId));
         }
 
+        if (Objects.isNull(amount) || amount <= 0L) {
+            return (ApiResult<OrderDto>) failed(String.format("Amount should be positive. [ID=%s]", amount));
+        }
+
         if (product.isCompleted()) {
             return (ApiResult<OrderDto>) failed(String.format("Product is end of sale. [FINISHED_AT=%s]", product.getFinishedAt()));
         }
@@ -73,7 +80,7 @@ public class OrderController {
     }
 
     @RequestMapping(value = "/user", method = {RequestMethod.GET})
-    ApiResult<List<OrderItemDto>> getOrderItemList(@RequestHeader(name = "X-USER-ID") Long userId) {
+    ApiResult<List<OrderItemDto>> getOrderItemList(@RequestHeader(name = "X-USER-ID") Long userId, Pageable pageable) {
         User user = userService.findById(userId);
 
         if (Objects.isNull(user)) {
@@ -81,7 +88,7 @@ public class OrderController {
         }
 
         return succeed(
-                orderItemService.findOrderItemsByUserId(userId).stream().map(OrderItemDto::new).collect(Collectors.toList())
+                orderItemService.findOrderItemsByUserId(userId, pageable).stream().map(OrderItemDto::new).collect(Collectors.toList())
         );
     }
 }
