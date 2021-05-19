@@ -1,6 +1,5 @@
 package com.kakaopay.invest.demo.model;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +12,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 @Table(name = "INVEST_USER")
 @Getter
 @Setter
-@Builder
 public class User implements Cloneable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")

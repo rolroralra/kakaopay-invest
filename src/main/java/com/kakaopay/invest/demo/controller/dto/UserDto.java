@@ -12,10 +12,6 @@ public class UserDto {
     private String name;
     private String email;
 
-    protected UserDto() {
-
-    }
-
     public UserDto(User user) {
         BeanUtils.copyProperties(user, this);
     }
