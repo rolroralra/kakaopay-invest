@@ -1,12 +1,14 @@
 package com.kakaopay.invest.demo.controller;
 
-import com.kakaopay.invest.demo.model.Order;
-import com.kakaopay.invest.demo.model.OrderItem;
+import com.kakaopay.invest.demo.controller.dto.ApiResultTest;
+import com.kakaopay.invest.demo.controller.dto.OrderDtoChecker;
+import com.kakaopay.invest.demo.controller.dto.OrderItemDtoChecker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,11 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.*;
 
 @DisplayName("[Controller]투자상품_주문_관련_API_테스트")
 @TestMethodOrder(value = MethodOrderer.DisplayName.class)
@@ -34,7 +37,7 @@ class OrderControllerTest {
 
     @DisplayName("테스트01_정상_투자상품_주문_테스트")
     @ParameterizedTest
-    @CsvSource(value = {"1:1:100", "2:2:200", "3:6:5000000"}, delimiterString = ":")
+    @CsvSource(value = {"1:1:100", "2:2:200", "3:6:100"}, delimiterString = ":")
     void 테스트01_정상_투자상품_주문_테스트(String userId, String productId, String amount) throws Exception {
         ResultActions result = mockMvc.perform(
                 post("/api/order")
@@ -44,7 +47,7 @@ class OrderControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         );
 
-        checkSuccessResult(result);
+        OrderDtoChecker.checkSuccessResult(result);
     }
 
     @DisplayName("테스트02_예외_투자상품_잔여수량_초과_주문_테스트")
@@ -59,7 +62,7 @@ class OrderControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         );
 
-        checkFailedResult(result);
+        ApiResultTest.checkFailedResult(result);
     }
 
     @DisplayName("테스트03_예외_종료된_투자상품_주문_테스트")
@@ -74,12 +77,12 @@ class OrderControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         );
 
-        checkFailedResult(result);
+        ApiResultTest.checkFailedResult(result);
     }
 
     @DisplayName("테스트04_매진된_투자상품_주문_테스트")
     @ParameterizedTest
-    @CsvSource(value = {"5:8:1"}, delimiterString = ":")
+    @CsvSource(value = {"5:9:5"}, delimiterString = ":")
     void 테스트04_매진된_투자상품_주문_테스트(String userId, String productId, String amount) throws Exception {
         ResultActions result = mockMvc.perform(
                 post("/api/order")
@@ -89,7 +92,7 @@ class OrderControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         );
 
-        checkFailedResult(result);
+        ApiResultTest.checkFailedResult(result);
     }
 
     @DisplayName("테스트05_예외_잘못된_사용자_ID_입력한_투자상품_주문_테스트")
@@ -104,7 +107,7 @@ class OrderControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         );
 
-        checkFailedResult(result);
+        ApiResultTest.checkFailedResult(result);
     }
 
     @DisplayName("테스트06_예외_잘못된_투자상품_ID_입력한_투자상품_주문_테스트")
@@ -119,46 +122,36 @@ class OrderControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         );
 
-        checkFailedResult(result);
+        ApiResultTest.checkFailedResult(result);
     }
 
-    private void checkSuccessResult(ResultActions result) throws Exception {
-        result.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data", notNullValue()))
-                .andExpect(jsonPath("$.error", nullValue()))
+    @DisplayName("테스트07_정상_사용자_투자상품_조회_테스트")
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "2", "3", "4", "5", "6"})
+    void 테스트07_정상_사용자_투자상품_조회_테스트(String userId) throws Exception {
+        ResultActions result = mockMvc.perform(
+                get("/api/order/user")
+                        .header("X-USER-ID", userId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
 
-                .andExpect(jsonPath("$.data.id", greaterThan(0)))
-                .andExpect(jsonPath("$.data.user", notNullValue()))
-                .andExpect(jsonPath("$.data.user.id", greaterThan(0)))
-                .andExpect(jsonPath("$.data.items").isArray())
-
-                .andExpect(jsonPath("$.data.items[0].id", greaterThan(0)))
-                .andExpect(jsonPath("$.data.items[0].product", notNullValue()))
-                .andExpect(jsonPath("$.data.items[0].product.id", greaterThan(0)))
-                .andExpect(jsonPath("$.data.items[0].product.title").isString())
-                .andExpect(jsonPath("$.data.items[0].product.totalInvestingAmount").isNumber())
-                .andExpect(jsonPath("$.data.items[0].product.currentAmount").isNumber())
-                .andExpect(jsonPath("$.data.items[0].product.startedAt").isString())
-                .andExpect(jsonPath("$.data.items[0].product.finishedAt").isString())
-                .andExpect(jsonPath("$.data.items[0].product.state").isString())
-
-                .andExpect(jsonPath("$.data.items[0].orderId", greaterThan(0)))
-                .andExpect(jsonPath("$.data.items[0].amount", greaterThan(0)))
-                .andExpect(jsonPath("$.data.items[0].state", is(OrderItem.State.PROCEED.name())))
-
-                .andExpect(jsonPath("$.data.items.length()", greaterThan(0)))
-                .andExpect(jsonPath("$.data.startedAt", notNullValue()))
-                .andExpect(jsonPath("$.data.finishedAt", nullValue()))
-                .andExpect(jsonPath("$.data.state", is(Order.State.PROCEED.name())));
+        OrderItemDtoChecker.checkSuccessResult(result);
+//        result.andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.data", notNullValue()))
+//                .andExpect(jsonPath("$.data").isArray());
     }
 
-    private void checkFailedResult(ResultActions result) throws Exception {
-        result.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data", nullValue()))
-                .andExpect(jsonPath("$.error", notNullValue()))
-                .andExpect(jsonPath("$.error").isString());
-    }
+    @DisplayName("테스트08_예외_존재하지_않는_사용자_투자상품_조회_테스트")
+    @ParameterizedTest
+    @ValueSource(longs = {-1, -100, 1000, 9999, 20})
+    void 테스트07_정상_사용자_투자상품_조회_테스트(Long userId) throws Exception {
+        ResultActions result = mockMvc.perform(
+                get("/api/order/user")
+                        .header("X-USER-ID", userId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
 
+        ApiResultTest.checkFailedResult(result);
+    }
 }

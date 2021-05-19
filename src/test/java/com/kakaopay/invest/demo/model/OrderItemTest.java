@@ -1,6 +1,8 @@
 package com.kakaopay.invest.demo.model;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -9,6 +11,7 @@ import java.util.Objects;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("[Model]주문_투자상품_목록_모델_객체_테스트")
+@TestMethodOrder(value = MethodOrderer.DisplayName.class)
 public class OrderItemTest {
     @DisplayName("정상_객체_생성_테스트")
     @ParameterizedTest

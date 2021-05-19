@@ -1,7 +1,6 @@
 package com.kakaopay.invest.demo.controller.dto;
 
 import com.kakaopay.invest.demo.model.Order;
-import com.kakaopay.invest.demo.model.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
@@ -19,9 +18,6 @@ public class OrderDto {
     private LocalDateTime startedAt;
     private LocalDateTime finishedAt;
     private Order.State state;
-
-    protected OrderDto() {
-    }
 
     public OrderDto(Order source) {
         BeanUtils.copyProperties(source, this);

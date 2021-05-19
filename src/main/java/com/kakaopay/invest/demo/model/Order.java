@@ -66,17 +66,6 @@ public class Order implements Cloneable {
         checkArgument(Objects.requireNonNullElse(id, 0L) >= 0L, "ID should be positive [%s]", id);
         checkArgument(Objects.nonNull(startedAt), "StartedAt should not be null date");
         checkArgument(Objects.nonNull(state), "State should not be null");
-
-//        checkArgument(Objects.nonNull(finishedAt), "FinishedAt should not be null date");
-//        checkArgument(startedAt.compareTo(finishedAt) < 0, "StartedAt: %s, FinishedAt: %s", startedAt.format(DateTimeUtil.DATE_TIME_FORMATTER), finishedAt.format(DateTimeUtil.DATE_TIME_FORMATTER));
-    }
-
-    public static Order of(Long orderId, long userId, String userName, String userEmail, long orderItemId, long productId, String productTitle, long productAmount, long orderItemAmount) {
-        return new Order(orderId, new User(userId, userName, userEmail), new OrderItem(orderItemId, new Product(productId, productTitle, productAmount), orderItemAmount));
-    }
-
-    public static Order of(Order order) throws CloneNotSupportedException {
-        return (Order) order.clone();
     }
 
     public void addItem(List<OrderItem> orderItems) {
@@ -94,6 +83,10 @@ public class Order implements Cloneable {
     }
 
     public void complete() {
+        for (OrderItem orderItem : items) {
+            orderItem.complete();
+        }
+
         setState(State.COMPLETED);
         setFinishedAt(LocalDateTime.now());
     }

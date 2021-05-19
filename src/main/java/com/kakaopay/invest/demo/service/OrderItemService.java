@@ -1,8 +1,11 @@
 package com.kakaopay.invest.demo.service;
 
 import com.kakaopay.invest.demo.model.OrderItem;
-import com.kakaopay.invest.demo.model.Product;
+
+import java.util.List;
 
 public interface OrderItemService {
-    OrderItem createOrderItem(Product product, Long amount);
+    OrderItem createOrderItem(Long productId, Long amount);
+
+    List<OrderItem> findOrderItemsByUserId(Long userId);
 }

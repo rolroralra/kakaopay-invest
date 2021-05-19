@@ -18,9 +18,6 @@ public class ProductDto {
     private LocalDateTime finishedAt;
     private Product.State state;
 
-    protected ProductDto() {
-    }
-
     public ProductDto(Product product) {
         BeanUtils.copyProperties(product, this);
     }

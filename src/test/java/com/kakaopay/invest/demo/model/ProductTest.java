@@ -2,7 +2,9 @@ package com.kakaopay.invest.demo.model;
 
 import com.kakaopay.invest.demo.util.DateTimeUtil;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -14,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DisplayName("[Model]투자상품_VO_테스트")
+@TestMethodOrder(value = MethodOrderer.DisplayName.class)
 public class ProductTest {
 
     @DisplayName("정상_생성_테스트")

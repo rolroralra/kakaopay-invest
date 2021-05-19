@@ -39,7 +39,7 @@ public class Product implements Cloneable {
     private State state;
 
     public enum State {
-        PROCEED, COMPLETED
+        PROCEED, SOLD_OUT, COMPLETED
     }
 
     public Product() {
@@ -69,16 +69,56 @@ public class Product implements Cloneable {
     }
 
     public boolean isProceeding() {
-        LocalDateTime now = LocalDateTime.now();
-        return now.isAfter(this.startedAt) && now.isBefore(this.finishedAt) && state == State.PROCEED;
+        return state == State.PROCEED;
+    }
+
+    public boolean isCompleted() {
+        return state == State.COMPLETED;
     }
 
     public boolean isSoldOut() {
         return getPossibleAmount() <= 0L;
     }
 
+    public boolean isSellable(Long amount) {
+        return isProceeding() && getPossibleAmount() >= amount;
+    }
+
     public Long getPossibleAmount() {
         return totalInvestingAmount - currentAmount;
+    }
+
+    public boolean sold(long amount) {
+        if (!isSellable(amount)) {
+            return false;
+        }
+
+        currentAmount += amount;
+
+        refreshState();
+
+        return true;
+    }
+
+    public boolean refreshState() {
+        if (isSoldOut()) {
+            return updateState(State.SOLD_OUT);
+        }
+
+        if (LocalDateTime.now().isAfter(finishedAt)) {
+            return updateState(State.COMPLETED);
+        }
+
+        return updateState(State.PROCEED);
+    }
+
+    private boolean updateState(State state) {
+        if (this.state.equals(state)) {
+            return false;
+        }
+
+        setState(state);
+        return true;
     }
 
     @Override
@@ -100,6 +140,7 @@ public class Product implements Cloneable {
         sb.append("id=").append(id);
         sb.append(", title='").append(title).append('\'');
         sb.append(", totalInvestingAmount=").append(totalInvestingAmount);
+        sb.append(", currentAmount=").append(currentAmount);
         sb.append(", startedAt=").append(startedAt);
         sb.append(", finishedAt=").append(finishedAt);
         sb.append(", state=").append(state);

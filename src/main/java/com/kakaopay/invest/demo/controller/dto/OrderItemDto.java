@@ -1,25 +1,25 @@
 package com.kakaopay.invest.demo.controller.dto;
 
 import com.kakaopay.invest.demo.model.OrderItem;
-import com.kakaopay.invest.demo.model.Product;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class OrderItemDto {
     private Long id;
-    private Product product;
-    private Long orderId;
     private Long amount;
-    private OrderItem.State state;
-
-    protected OrderItemDto() {
-    }
+    private LocalDateTime startedAt;
+    private LocalDateTime finishedAt;
+    private ProductDto product;
 
     public OrderItemDto(OrderItem source) {
-        BeanUtils.copyProperties(source, this);
-        this.setOrderId(source.getOrder().getId());
+        this.setAmount(source.getAmount());
+        this.setId(source.getProduct().getId());
+        this.setStartedAt(source.getOrder().getStartedAt());
+        this.setFinishedAt(source.getOrder().getFinishedAt());
+        this.setProduct(new ProductDto(source.getProduct()));
     }
 }

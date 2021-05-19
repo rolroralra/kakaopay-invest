@@ -64,6 +64,19 @@ public class OrderItem implements Cloneable {
         return this.getId().equals(orderItem.getId());
     }
 
+    public void complete() {
+        if (product.sold(amount)) {
+            setState(State.SUCCESS);
+            return;
+        }
+
+        setState(State.FAILED);
+    }
+
+    public boolean isSuccess() {
+        return state == State.SUCCESS;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
